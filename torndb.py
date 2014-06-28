@@ -135,7 +135,10 @@ class Connection(object):
         try:
             self._execute(cursor, query, parameters, kwparameters)
             column_names = [d[0] for d in cursor.description]
-            return [Row(itertools.izip(column_names, row)) for row in cursor]
+            try: # pythion 2.x
+                return [Row(itertools.izip(column_names, row)) for row in cursor]
+            except AttributeError: # python 3.x
+                return [Row(itertools.zip_longest(column_names, row)) for row in cursor]
         finally:
             cursor.close()
 
